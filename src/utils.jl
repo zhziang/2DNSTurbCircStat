@@ -1,5 +1,3 @@
-using FourierFlows, CUDA
-
 """
 	Compute the velocity circulation over a rectangular loop fixed by 'width' and 'height'
 	using the convolution of the vorcity field 'ζ' and the loop Heaviside 'hs'.

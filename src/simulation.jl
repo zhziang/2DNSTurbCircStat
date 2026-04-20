@@ -29,7 +29,7 @@ aps = ArgParseSettings()
 	"--path", "-p"
 	help = "The path of the output file."
 	arg_type = String
-	default = @__DIR__
+	default = dirname(@__DIR__)
 end
 args = parse_args(aps)
 Re = args["re"]
@@ -84,10 +84,10 @@ prob = TwoDNavierStokes.Problem(dev;
 )
 
 # Initialize out put file & get the initial value.
-output_path = args["path"] * "/.output/Re$(Re)_N$(ngrid).h5"
-diag_path = args["path"] * "/output/Re$(Re)_N$(ngrid)_diag.h5"
-isdir(args["path"] * "/.output/") || mkdir(args["path"] * "/.output/")
-isdir(args["path"] * "/output/") || mkdir(args["path"] * "/output/")
+output_path = args["path"] * "/$(ngrid)/$(Re).h5"
+diag_path = args["path"] * "/$(ngrid)_diag/$(Re).h5"
+isdir(args["path"] * "/$(ngrid)/") || mkdir(args["path"] * "/$(ngrid)/")
+isdir(args["path"] * "/$(ngrid)_diag/") || mkdir(args["path"] * "/$(ngrid)_diag/")
 if isfile(output_path)
 	sol = h5open(output_path, "r") do f
 		frames = [parse(Int, k) for k in keys(f)]
@@ -112,7 +112,7 @@ cfln = create_dataset(fid_diag, "cfl number", Float64, (ndata))
 	end
 	write_dataset(fid, "$(nframe)", Array(prob.sol))
 	E = FourierFlows.parsevalsum(abs2.(prob.sol) .* prob.grid.invKrsq, prob.grid)
-    diag[nframe] = E
+	diag[nframe] = E
 	cfln[nframe] = dt * sqrt(E) * ngrid / L
 end
 
